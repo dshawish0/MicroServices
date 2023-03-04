@@ -1,0 +1,107 @@
+version: '3'
+
+services:
+
+  docker-mysql:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=temperatureSystem
+    ports:
+      - 3307:3306
+
+  temperature-record-api:
+    build: ./TemperatureRecord-Api
+    ports:
+       - 80:8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://docker-mysql:3306/temperatureSystem?allowPublicKeyRetrieval=true&useSSL=false
+    depends_on:
+       - docker-mysql
+       - authservice
+    links:
+      - docker-mysql:docker-mysql
+
+
+  analytics-api:
+    build: ./AnalyticsApi
+    ports:
+       - 8082:8082 
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://docker-mysql:3306/temperatureSystem?allowPublicKeyRetrieval=true&useSSL=false
+      spring.data.mongodb.authentication-database: admin
+      spring.data.mongodb.username: root
+      spring.data.mongodb.password: example
+      spring.data.mongodb.database: analytics
+      spring.data.mongodb.port: 27017
+      spring.data.mongodb.host: mongodb
+      spring.data.mongodb.auto-index-creation: true
+
+    depends_on:
+       - docker-mysql
+       - authservice
+       - mongodb
+    links:
+      - docker-mysql:docker-mysql
+      - mongodb:mongodb
+
+
+  analytics-result-api:
+      build: ./AnalyticsResultsApi
+      ports:
+       - 8083:8083 
+      environment:
+        spring.data.mongodb.authentication-database: admin
+        spring.data.mongodb.username: root
+        spring.data.mongodb.password: example
+        spring.data.mongodb.database: analytics
+        spring.data.mongodb.port: 27017
+        spring.data.mongodb.host: mongodb
+        spring.data.mongodb.auto-index-creation: true
+
+      depends_on:
+        - authservice
+        - mongodb
+      links:
+        - mongodb:mongodb
+
+
+  temperature-record-ui:
+    build: ./TemperatureRecord-UI
+    ports:
+      - "4000:80"
+    depends_on:
+      - temperature-record-api
+
+  analytics-result-ui:
+    build: ./AnalyticsResults-UI
+    ports:
+      - "4001:80"
+    depends_on:
+      - analytics-result-api
+
+  authservice:
+    build: ./AuthenticationService
+    ports:
+      - "4040:81"
+
+  mongodb:
+    image: mongo:latest
+    restart: always
+    container_name: analyticsdb
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: "mongodb://root:example@mongodb:27017/"
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+

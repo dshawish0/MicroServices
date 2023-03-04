@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Temperature Log</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+    <link rel="stylesheet" href="css/index.css">
+    <style>
+        body {
+            background-color: #F8F8F8;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+        
+        #temperature-table {
+            margin-top: 20px;
+        }
+        
+        #temperature-table th {
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        #temperature-table tbody tr:nth-child(odd) {
+            background-color: #F2F2F2;
+        }
+        
+        #temperature-table tbody td:last-child {
+            font-weight: bold;
+        }
+        
+        .add-button {
+            display: block;
+            margin: 0 auto;
+            width: 200px;
+            height: 50px;
+            margin-top: 50px;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Temperature Log</h1>
+                <table id="temperature-table" class="table table-striped table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Date</th>
+                            <th>Temperature</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <a href="addTemperature.html" class="btn btn-primary add-button"><i class="fas fa-plus-circle mr-2"></i>Add Temperature</a>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+    <script src="js/index.js"></script>
+    <script>
+        fetch('http://localhost/api/temperature')
+            .then(response => response.json())
+            .then(data => {
+
+                const tbody = document.querySelector('#temperature-table tbody');
+
+
+                data.forEach(item => {
+                    const tr = document.createElement('tr');
+                    const dateTd = document.createElement('td');
+                    const date = new Date(item.date).toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    dateTd.textContent = date;
+                    const tempTd = document.createElement('td');
+                    tempTd.textContent = item.temperature + " ℃";
+                    tr.appendChild(dateTd);
+                    tr.appendChild(tempTd);
+                    tbody.appendChild(tr);
+                });
+            })
+            .catch(error => console.error(error));
+    </script>
+</body>
+
+</html>

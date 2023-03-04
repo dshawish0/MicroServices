@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Loginn Form</title>
+    <style>
+        /* Background color and font styles */
+        
+        body {
+            background-color: #f2f2f2;
+            font-family: Arial, sans-serif;
+        }
+        /* Center the form and add some margin */
+        
+        .form-container {
+            width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        /* Style the form inputs and submit button */
+        
+        input[type="text"],
+        input[type="password"],
+        input[type="submit"] {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        
+        input[type="submit"] {
+            background-color: #4c72af;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease-in-out;
+        }
+        /* Hover effect for the submit button */
+        
+        input[type="submit"]:hover {
+            background-color: #4c72af;
+        }
+        /* Style the labels */
+        
+        label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<div class="form-container">
+    <h2>Loginn</h2>
+    <form id="login-form">
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <input type="submit" value="Login">
+    </form>
+</div>
+<script>
+    const loginForm = document.querySelector("#login-form");
+    const emailInput = document.querySelector("#email");
+    const passwordInput = document.querySelector("#password");
+
+    loginForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        const url = "http://localhost/api/Auth";
+
+        const data = {
+            email: email,
+            password: password,
+        };
+
+        fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            })
+            .then((response) => response.json())
+            .then((response) => {
+                if (response) {
+                    window.location.href = "AnalyticsResultsApi.html";
+                } else {
+                    // Login failed, show error message
+                    alert("login failedd");
+                }
+            })
+            .catch((error) => {
+                // Handle network errors
+                alert("Error: " + error.message);
+            });
+    });
+</script>
+</body>
+
+</html>

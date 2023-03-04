@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Analytics Results</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .table-container {
+            width: 80%;
+            margin: auto;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="table-container">
+            <table class="table">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Max</th>
+                        <th>Min</th>
+                        <th>Avg</th>
+                    </tr>
+                </thead>
+                <tbody id="results-table">
+                </tbody>
+            </table>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-primary" onclick="location.reload()">Reload</button>
+        </div>
+    </div>
+    <script>
+        fetch("http://localhost:8083/api/AnalyticsResult")
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector("#results-table");
+                data.forEach(item => {
+                    const row = document.createElement("tr");
+                    const maxCell = document.createElement("td");
+                    const minCell = document.createElement("td");
+                    const avgCell = document.createElement("td");
+                    maxCell.textContent = item.max;
+                    minCell.textContent = item.min;
+                    avgCell.textContent = item.avg.toFixed(3);
+                    row.appendChild(maxCell);
+                    row.appendChild(minCell);
+                    row.appendChild(avgCell);
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error(error));
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
